@@ -16,12 +16,23 @@ function prepareOutputDirectory(folderName = "output") {
 }
 
 async function main() {
+  const args = process.argv.slice(2);
+
+  let [rooms] = args;
+  if (!rooms || isNaN(Number(rooms)) || rooms < 1) {
+    console.error("Invalid first positional argument 'rooms' must be a number (> 1)");
+
+    const defaultRooms = 4;
+
+    console.log("Fallback to rooms: ", defaultRooms);
+    
+    rooms = defaultRooms;
+  }
+
   console.log("Livekit Stress Tester");
   console.log("PWD: ", process.cwd());
 
   prepareOutputDirectory();
-
-  const rooms = 4;
 
   for (let i = 0; i < rooms; i++) {
     const roomName = `lk-test-${i + 1}`;
