@@ -53,6 +53,6 @@ async function main() {
 
   setTimeout(() => {
     clearInterval(intervalHandle);
-  }, 40_000);
+  }, 60 * 5 * 1000 + 10_000);
 }
 main();

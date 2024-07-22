@@ -54,7 +54,7 @@ export function spawnLivekitLoadTest(options) {
 
   setTimeout(() => {
     process.kill(loadTestProcess.pid, "SIGINT");
-  }, 30_000);
+  }, 60 * 5 * 1000);
 }
 
 // TODO:
