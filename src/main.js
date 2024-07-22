@@ -1,7 +1,8 @@
 import fs from "node:fs";
+import os from "node:os";
 
 import { spawnLivekitLoadTest } from "./livekit.js";
-
+import { formatBytes } from "./utils.js";
 
 function prepareOutputDirectory(folderName = "output") {
   try {
@@ -13,7 +14,6 @@ function prepareOutputDirectory(folderName = "output") {
     console.error(err);
   }
 }
-
 
 async function main() {
   console.log("Livekit Stress Tester");
@@ -30,5 +30,18 @@ async function main() {
 
     spawnLivekitLoadTest({ roomName });
   }
+
+  const intervalHandle = setInterval(() => {
+    const total = os.totalmem();
+    const free = os.freemem();
+
+    const allocated = total - free;
+
+    console.log(`Alloc.: ${formatBytes(allocated)}\t|\tFree: ${formatBytes(free)}\t|\tTotal: ${formatBytes(total)}`);
+  }, 1000);
+
+  setTimeout(() => {
+    clearInterval(intervalHandle);
+  }, 40_000);
 }
 main();
