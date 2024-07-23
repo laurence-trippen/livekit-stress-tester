@@ -15,19 +15,32 @@ function prepareOutputDirectory(folderName = "output") {
   }
 }
 
-async function main() {
+function getArgs() {
   const args = process.argv.slice(2);
 
-  let [rooms] = args;
-  if (!rooms || isNaN(Number(rooms)) || rooms < 1) {
-    console.error("Invalid first positional argument 'rooms' must be a number (> 1)");
+  let [rooms, testDuration, ipAddress] = args;
 
+  if (!rooms || isNaN(Number(rooms)) || rooms < 1) {
     const defaultRooms = 4;
 
+    console.error("Invalid 1st positional argument 'rooms' must be a number (> 1)");
     console.log("Fallback to rooms: ", defaultRooms);
     
     rooms = defaultRooms;
   }
+
+  if (!testDuration || isNaN(Number(testDuration)) || testDuration < 1) {
+    console.error("Invalid 2nd positional argument 'testDuration' must a number in seconds");
+    console.log("Fallback to test duration seconds: ", testDuration);
+
+    testDuration = 10; // seconds
+  }
+
+  return [rooms, testDuration, ipAddress];
+}
+
+async function main() {
+  const [rooms, testDuration, ipAddress] = getArgs();
 
   console.log("Livekit Stress Tester");
   console.log("PWD: ", process.cwd());
@@ -39,7 +52,7 @@ async function main() {
 
     console.log("Spawning room " + roomName);
 
-    spawnLivekitLoadTest({ roomName });
+    spawnLivekitLoadTest({ roomName, testDuration, ipAddress });
   }
 
   const intervalHandle = setInterval(() => {
@@ -51,8 +64,10 @@ async function main() {
     console.log(`Alloc.: ${formatBytes(allocated)}\t|\tFree: ${formatBytes(free)}\t|\tTotal: ${formatBytes(total)}`);
   }, 1000);
 
+  const cooldownTime = 10_000;
+
   setTimeout(() => {
     clearInterval(intervalHandle);
-  }, 60 * 5 * 1000 + 10_000);
+  }, testDuration * 1000 + cooldownTime);
 }
 main();

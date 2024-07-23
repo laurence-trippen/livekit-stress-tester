@@ -7,7 +7,7 @@ import { generateTestDate } from "./utils.js";
 
 const getLoadTestCommand = (options) => `lk 
   load-test 
-  --url ws://192.168.1.148:7880
+  --url ${options.ipAddress ?? "ws://192.168.1.120:7880"}
   --api-key devkey
   --api-secret secret
   --room ${options.roomName}
@@ -54,7 +54,7 @@ export function spawnLivekitLoadTest(options) {
 
   setTimeout(() => {
     process.kill(loadTestProcess.pid, "SIGINT");
-  }, 60 * 5 * 1000);
+  }, options.testDuration * 1000);
 }
 
 // TODO:
